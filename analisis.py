@@ -23,6 +23,72 @@ IDX_TRABAJA   = encabezado.index('trabaja')
 
 total = len(datos)
 
+#REPORTE 9
+con_internet = 0
+for fila in datos:
+    if int(fila[IDX_Q10]) >= 3:
+        con_internet += 1
+ 
+print("----------------------------------------------------------")
+print("  Reporte 9: Acceso a internet en casa")
+print("----------------------------------------------------------")
+print(f"  Con acceso  : {con_internet} ({con_internet/total*100:.1f}%)")
+print(f"  Sin acceso  : {total - con_internet} ({(total-con_internet)/total*100:.1f}%)")
+print(f"  Total       : {total}")
+ 
+ 
+#Reporte 10:
+con_computadora = 0
+for fila in datos:
+    if int(fila[IDX_Q07]) >= 3:
+        con_computadora += 1
+ 
+print("----------------------------------------------------------")
+print("  Reporte 10: Computadora propia")
+print("----------------------------------------------------------")
+print(f"  Con computadora : {con_computadora} ({con_computadora/total*100:.1f}%)")
+print(f"  Sin computadora : {total - con_computadora} ({(total-con_computadora)/total*100:.1f}%)")
+print(f"  Total           : {total}")
+ 
+ 
+#REPORTE 11:
+conteo_horas = {}
+for fila in datos:
+    nivel = fila[IDX_Q01].strip()
+    if nivel in conteo_horas:
+        conteo_horas[nivel] += 1
+    else:
+        conteo_horas[nivel] = 1
+ 
+print("----------------------------------------------------------")
+print("  Reporte 11: Horas de estudio semanales")
+print("----------------------------------------------------------")
+for nivel in sorted(conteo_horas.keys()):
+    cantidad = conteo_horas[nivel]
+    print(f"  Nivel {nivel} : {cantidad} ({cantidad/total*100:.1f}%)")
+print(f"  Total   : {total}")
+ 
+ 
+#REPORTE 12: Satisfaccion con la carrera 
+conteo_satisf = {}
+suma_satisf = 0
+for fila in datos:
+    nivel = fila[IDX_Q18].strip()
+    suma_satisf += int(nivel)
+    if nivel in conteo_satisf:
+        conteo_satisf[nivel] += 1
+    else:
+        conteo_satisf[nivel] = 1
+ 
+print("----------------------------------------------------------")
+print("  REPORTE 12: SATISFACCION CON LA CARRERA")
+print("=" * 45)
+print(f"  Promedio : {suma_satisf/total:.2f} / 5")
+for nivel in sorted(conteo_satisf.keys()):
+    cantidad = conteo_satisf[nivel]
+    print(f"  Nivel {nivel} : {cantidad} ({cantidad/total*100:.1f}%)")
+print(f"  Total    : {total}")
+
 
 # ── REPORTE 17: Internet vs promedio academico ────────────────
 suma_por_internet   = {}
