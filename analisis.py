@@ -220,6 +220,8 @@ IDX_CARRERA   = encabezado.index('carrera')
 IDX_SEMESTRE  = encabezado.index('semestre')
 IDX_JORNADA   = encabezado.index('jornada')
 IDX_TRABAJA   = encabezado.index('trabaja')
+IDX_DIFICULTAD = encabezado.index('q15_dificultad_cursos')
+IDX_ESTRES = encabezado.index('q16_estres_academico')
 
 total = len(datos)
 
@@ -369,6 +371,156 @@ for nivel in sorted(conteo_satisf.keys()):
     print(f"  Nivel {nivel} : {cantidad} ({cantidad/total*100:.1f}%)")
 print(f"  Total    : {total}")
 
+#reporte numero 13: Nivel de estres academico general#
+
+suma_estres = 0 #variable para acumular la suma total#
+
+for fila in datos: #recorrer las respuestas brindadas#
+    suma_estres += int(fila[IDX_ESTRES])
+    
+    promedio_estres = suma_estres / len(datos)
+    
+    
+print("----------------------------------------------------------")
+print("reporte 13: NIVEL DE ESTRES ACADEMICO GENERAL")
+print(len(datos))  # debe dar 10000
+print("el nivel de estres academico promedio de los estudiantes es:", promedio_estres)
+
+if promedio_estres < 2:
+    print("Interpretación: Bajo nivel de estrés.")
+elif promedio_estres < 4:
+    print("Interpretación: Nivel de estrés moderado.")
+else:
+    print("Interpretación: Alto nivel de estrés.")
+
+
+#reporte 14: Curso percibido como mas dificil#
+
+conteo_dificultad= [0]*6 #en escala de 1 a 5
+
+for fila in datos:             #recorrer datos#
+    valor= int(fila[IDX_DIFICULTAD])
+    conteo_dificultad[valor] += 1
+#obtener el nivel mas frecuente#
+max_valor = conteo_dificultad.index(max(conteo_dificultad))
+
+# Interpretación del nivel
+if max_valor == 1:
+    descripcion = "Muy fácil"
+elif max_valor == 2:
+    descripcion = "Fácil"
+elif max_valor == 3:
+    descripcion = "Moderado"
+elif max_valor == 4:
+    descripcion = "Difícil"
+else:
+    descripcion = "Muy difícil"
+
+# Mostrar resultados
+print("----------------------------------------------------------")
+print("\nREPORTE 14: PERCEPCIÓN DE DIFICULTAD DE LOS CURSOS")
+print("Nivel de dificultad más frecuente:", max_valor)
+print("Interpretación:", descripcion)
+
+
+#REPORTE 15: cARRERA CON MAYOR NIVEL PROMEDIO DE ESTRES#
+
+#listas para almacenar informacion por carrera#
+carreras = []
+suma_estres_carrera = []
+conteo_carrera = []
+
+for fila in datos:
+    carrera = fila[IDX_CARRERA]  #obtener carrera#
+    estres = int(fila[IDX_ESTRES]) #convertir estres a numero#
+    
+    if carrera not in carreras:   #si la carrera no esta guardada aun#
+        carreras.append(carrera)          #guardar carrera#
+        suma_estres_carrera.append(estres)   #iniciar suma#
+        conteo_carrera.append(1)             #iniciar conteo#
+    else:
+        i= carreras.index(carrera)   #buscar donde esta la carrera#
+        suma_estres_carrera[i] += estres
+        conteo_carrera[i] += 1
+
+#lista para guardar promedios por carrera#
+promedios = []
+#calcular promedio por carrera#
+for i in range(len(carreras)):
+    if conteo_carrera[i] != 0:
+        promedios.append(suma_estres_carrera[i] / conteo_carrera[i])
+    else:
+        promedios.append(promedio) # type: ignore
+        
+#buscar la carrera con mayor promedio de estres#
+max_prom = max(promedios)
+pos = promedios.index(max_prom)
+
+#mostrar resultados#
+
+print("----------------------------------------------------------")
+print("\nREPORTE 15: CARRERA CON MAYOR NIVEL DE ESTRÉS")
+print("Carrera:", carreras[pos])
+print("Nivel de estrés promedio:", round(max_prom, 2))
+
+
+if max_prom < 2:
+    print("Interpretación: Bajo nivel de estrés en esta carrera.")
+elif max_prom < 4:
+    print("Interpretación: Nivel de estrés moderado en esta carrera.")
+else:
+    print("Interpretación: Alto nivel de estrés en esta carrera.")
+
+#REPORTE 16 RELACION ENTRE TRABAJAR Y PROMEDIO ACADEMICO #
+suma_trabaja = 0
+conteo_trabaja = 0     #variables para estudiantes que trabajan#
+
+suma_no_trabaja = 0        #variable para estudiantes que no trabajan#
+conteo_no_trabaja = 0
+
+for fila in datos:
+    # limpiar texto#
+    trabaja = fila[IDX_TRABAJA].strip().lower()
+    promedio = float(fila[IDX_PROMEDIO])
+
+
+    if trabaja.startswith("s"):   # detecta "sí", "si", "SI", etc.
+        suma_trabaja += promedio
+        conteo_trabaja += 1
+    else:
+        suma_no_trabaja += promedio
+        conteo_no_trabaja += 1
+
+
+# Evitar división entre 0
+if conteo_trabaja > 0:
+    prom_trabaja = suma_trabaja / conteo_trabaja
+else:
+    prom_trabaja = 0
+
+if conteo_no_trabaja > 0: 
+    prom_no_trabaja = suma_no_trabaja / conteo_no_trabaja
+else:
+    prom_no_trabaja = 0
+
+
+# Mostrar resultados
+print("----------------------------------------------------------")
+print("\nREPORTE 16: RELACIÓN ENTRE TRABAJAR Y PROMEDIO ACADÉMICO")
+print("Cantidad que trabajan:", conteo_trabaja)
+print("Cantidad que NO trabajan:", conteo_no_trabaja)
+
+print("Promedio de estudiantes que trabajan:", round(prom_trabaja, 2))
+print("Promedio de estudiantes que NO trabajan:", round(prom_no_trabaja, 2))
+
+
+# Interpretación
+if prom_trabaja > prom_no_trabaja:
+    print("Interpretación: Los estudiantes que trabajan tienen mejor promedio.")
+elif prom_trabaja < prom_no_trabaja:
+    print("Interpretación: Los estudiantes que NO trabajan tienen mejor rendimiento académico.")
+else:
+    print("Interpretación: No hay diferencia significativa entre ambos grupos.")
 
 # ── REPORTE 17: Internet vs promedio academico ────────────────
 suma_por_internet   = {}
