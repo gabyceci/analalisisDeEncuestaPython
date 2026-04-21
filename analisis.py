@@ -550,49 +550,71 @@ elif prom_trabaja < prom_no_trabaja:
 else:
     print("Interpretación: No hay diferencia significativa entre ambos grupos.")
 
-# ── REPORTE 17: Internet vs promedio academico ────────────────
-suma_por_internet   = {}
-cantidad_por_internet = {}
+# ── REPORTE 17: Internet vs promedio académico ───────────────
+# Lista de listas: cada elemento = [nivel, suma_promedios, cantidad]
+grupos_internet = []
+
 for fila in datos:
     nivel = fila[IDX_Q10].strip()
     prom  = int(fila[IDX_PROMEDIO])
-    if nivel in suma_por_internet:
-        suma_por_internet[nivel]    += prom
-        cantidad_por_internet[nivel] += 1
+    encontrado = -1
+    for i in range(len(grupos_internet)):
+        if grupos_internet[i][0] == nivel:
+            encontrado = i
+            break
+    if encontrado == -1:
+        grupos_internet.append([nivel, prom, 1])
     else:
-        suma_por_internet[nivel]    = prom
-        cantidad_por_internet[nivel] = 1
+        grupos_internet[encontrado][1] += prom
+        grupos_internet[encontrado][2] += 1
+
+# Ordenar por nivel
+for i in range(len(grupos_internet) - 1):
+    for j in range(len(grupos_internet) - 1 - i):
+        if grupos_internet[j][0] > grupos_internet[j + 1][0]:
+            grupos_internet[j], grupos_internet[j + 1] = grupos_internet[j + 1], grupos_internet[j]
 
 print("=" * 45)
 print("  REPORTE 17: INTERNET VS PROMEDIO ACADEMICO")
 print("=" * 45)
-for nivel in sorted(suma_por_internet.keys()):
-    prom = suma_por_internet[nivel] / cantidad_por_internet[nivel]
-    print(f"  Internet nivel {nivel} : promedio {prom:.2f}  (n={cantidad_por_internet[nivel]})")
+for g in grupos_internet:
+    prom_calc = g[1] / g[2]
+    print(f"  Internet nivel {g[0]} : promedio {prom_calc:.2f}  (n={g[2]})")
 
 
-# ── REPORTE 18: Horas de estudio vs rendimiento ───────────────
-suma_por_horas    = {}
-cantidad_por_horas = {}
+# ── REPORTE 18: Horas de estudio vs rendimiento ──────────────
+# Lista de listas: cada elemento = [nivel, suma_promedios, cantidad]
+grupos_horas = []
+
 for fila in datos:
     nivel = fila[IDX_Q01].strip()
     prom  = int(fila[IDX_PROMEDIO])
-    if nivel in suma_por_horas:
-        suma_por_horas[nivel]    += prom
-        cantidad_por_horas[nivel] += 1
+    encontrado = -1
+    for i in range(len(grupos_horas)):
+        if grupos_horas[i][0] == nivel:
+            encontrado = i
+            break
+    if encontrado == -1:
+        grupos_horas.append([nivel, prom, 1])
     else:
-        suma_por_horas[nivel]    = prom
-        cantidad_por_horas[nivel] = 1
+        grupos_horas[encontrado][1] += prom
+        grupos_horas[encontrado][2] += 1
+
+# Ordenar por nivel
+for i in range(len(grupos_horas) - 1):
+    for j in range(len(grupos_horas) - 1 - i):
+        if grupos_horas[j][0] > grupos_horas[j + 1][0]:
+            grupos_horas[j], grupos_horas[j + 1] = grupos_horas[j + 1], grupos_horas[j]
 
 print("=" * 45)
 print("  REPORTE 18: HORAS ESTUDIO VS RENDIMIENTO")
 print("=" * 45)
-for nivel in sorted(suma_por_horas.keys()):
-    prom = suma_por_horas[nivel] / cantidad_por_horas[nivel]
-    print(f"  Horas nivel {nivel} : promedio {prom:.2f}  (n={cantidad_por_horas[nivel]})")
+for g in grupos_horas:
+    prom_calc = g[1] / g[2]
+    print(f"  Horas nivel {g[0]} : promedio {prom_calc:.2f}  (n={g[2]})")
 
 
-# ── REPORTE 19: Interes en cursos virtuales ───────────────────
+# ── REPORTE 19: Interés en cursos virtuales ──────────────────
 alto_uso = 0
 for fila in datos:
     if int(fila[IDX_Q07]) >= 4:
@@ -605,119 +627,175 @@ print(f"  Interesados     : {alto_uso} ({alto_uso/total*100:.1f}%)")
 print(f"  No interesados  : {total - alto_uso} ({(total-alto_uso)/total*100:.1f}%)")
 print(f"  Total           : {total}")
 
-# REPORTE 20: Perfil predominante
 
-moda_carrera  = ""
-moda_semestre = ""
-moda_jornada  = ""
-moda_trabaja  = ""
-moda_q01      = ""
-moda_q10      = ""
-moda_q18      = ""
+# ── REPORTE 20: Perfil predominante ─────────────────────────
 
-max_carrera  = 0
-max_semestre = 0
-max_jornada  = 0
-max_trabaja  = 0
-max_q01      = 0
-max_q10      = 0
-max_q18      = 0
-
-conteo_carrera  = {}
-conteo_semestre = {}
-conteo_jornada  = {}
-conteo_trabaja  = {}
-conteo_q01      = {}
-conteo_q10      = {}
-conteo_q18      = {}
-
+# -- Carrera --
+claves_r20_carrera  = []
+conteos_r20_carrera = []
 for fila in datos:
-    c = fila[IDX_CARRERA].strip()
-    if c in conteo_carrera:
-        conteo_carrera[c] += 1
+    valor = fila[IDX_CARRERA].strip()
+    encontrado = -1
+    for i in range(len(claves_r20_carrera)):
+        if claves_r20_carrera[i] == valor:
+            encontrado = i
+            break
+    if encontrado == -1:
+        claves_r20_carrera.append(valor)
+        conteos_r20_carrera.append(1)
     else:
-        conteo_carrera[c] = 1
+        conteos_r20_carrera[encontrado] += 1
 
-    s = fila[IDX_SEMESTRE].strip()
-    if s in conteo_semestre:
-        conteo_semestre[s] += 1
+moda_carrera = claves_r20_carrera[0]
+max_carrera  = conteos_r20_carrera[0]
+for i in range(len(claves_r20_carrera)):
+    if conteos_r20_carrera[i] > max_carrera:
+        max_carrera  = conteos_r20_carrera[i]
+        moda_carrera = claves_r20_carrera[i]
+
+# -- Semestre --
+claves_r20_semestre  = []
+conteos_r20_semestre = []
+for fila in datos:
+    valor = fila[IDX_SEMESTRE].strip()
+    encontrado = -1
+    for i in range(len(claves_r20_semestre)):
+        if claves_r20_semestre[i] == valor:
+            encontrado = i
+            break
+    if encontrado == -1:
+        claves_r20_semestre.append(valor)
+        conteos_r20_semestre.append(1)
     else:
-        conteo_semestre[s] = 1
+        conteos_r20_semestre[encontrado] += 1
 
-    j = fila[IDX_JORNADA].strip()
-    if j in conteo_jornada:
-        conteo_jornada[j] += 1
+moda_semestre = claves_r20_semestre[0]
+max_semestre  = conteos_r20_semestre[0]
+for i in range(len(claves_r20_semestre)):
+    if conteos_r20_semestre[i] > max_semestre:
+        max_semestre  = conteos_r20_semestre[i]
+        moda_semestre = claves_r20_semestre[i]
+
+# -- Jornada --
+claves_r20_jornada  = []
+conteos_r20_jornada = []
+for fila in datos:
+    valor = fila[IDX_JORNADA].strip()
+    encontrado = -1
+    for i in range(len(claves_r20_jornada)):
+        if claves_r20_jornada[i] == valor:
+            encontrado = i
+            break
+    if encontrado == -1:
+        claves_r20_jornada.append(valor)
+        conteos_r20_jornada.append(1)
     else:
-        conteo_jornada[j] = 1
+        conteos_r20_jornada[encontrado] += 1
 
-    t = fila[IDX_TRABAJA].strip()
-    if t in conteo_trabaja:
-        conteo_trabaja[t] += 1
+moda_jornada = claves_r20_jornada[0]
+max_jornada  = conteos_r20_jornada[0]
+for i in range(len(claves_r20_jornada)):
+    if conteos_r20_jornada[i] > max_jornada:
+        max_jornada  = conteos_r20_jornada[i]
+        moda_jornada = claves_r20_jornada[i]
+
+# -- Trabaja --
+claves_r20_trabaja  = []
+conteos_r20_trabaja = []
+for fila in datos:
+    valor = fila[IDX_TRABAJA].strip()
+    encontrado = -1
+    for i in range(len(claves_r20_trabaja)):
+        if claves_r20_trabaja[i] == valor:
+            encontrado = i
+            break
+    if encontrado == -1:
+        claves_r20_trabaja.append(valor)
+        conteos_r20_trabaja.append(1)
     else:
-        conteo_trabaja[t] = 1
+        conteos_r20_trabaja[encontrado] += 1
 
-    q1 = fila[IDX_Q01].strip()
-    if q1 in conteo_q01:
-        conteo_q01[q1] += 1
+moda_trabaja = claves_r20_trabaja[0]
+max_trabaja  = conteos_r20_trabaja[0]
+for i in range(len(claves_r20_trabaja)):
+    if conteos_r20_trabaja[i] > max_trabaja:
+        max_trabaja  = conteos_r20_trabaja[i]
+        moda_trabaja = claves_r20_trabaja[i]
+
+claves_r20_q01  = []
+conteos_r20_q01 = []
+for fila in datos:
+    valor = fila[IDX_Q01].strip()
+    encontrado = -1
+    for i in range(len(claves_r20_q01)):
+        if claves_r20_q01[i] == valor:
+            encontrado = i
+            break
+    if encontrado == -1:
+        claves_r20_q01.append(valor)
+        conteos_r20_q01.append(1)
     else:
-        conteo_q01[q1] = 1
+        conteos_r20_q01[encontrado] += 1
 
-    q10 = fila[IDX_Q10].strip()
-    if q10 in conteo_q10:
-        conteo_q10[q10] += 1
+moda_q01 = claves_r20_q01[0]
+max_q01  = conteos_r20_q01[0]
+for i in range(len(claves_r20_q01)):
+    if conteos_r20_q01[i] > max_q01:
+        max_q01  = conteos_r20_q01[i]
+        moda_q01 = claves_r20_q01[i]
+
+claves_r20_q10  = []
+conteos_r20_q10 = []
+for fila in datos:
+    valor = fila[IDX_Q10].strip()
+    encontrado = -1
+    for i in range(len(claves_r20_q10)):
+        if claves_r20_q10[i] == valor:
+            encontrado = i
+            break
+    if encontrado == -1:
+        claves_r20_q10.append(valor)
+        conteos_r20_q10.append(1)
     else:
-        conteo_q10[q10] = 1
+        conteos_r20_q10[encontrado] += 1
 
-    q18 = fila[IDX_Q18].strip()
-    if q18 in conteo_q18:
-        conteo_q18[q18] += 1
+moda_q10 = claves_r20_q10[0]
+max_q10  = conteos_r20_q10[0]
+for i in range(len(claves_r20_q10)):
+    if conteos_r20_q10[i] > max_q10:
+        max_q10  = conteos_r20_q10[i]
+        moda_q10 = claves_r20_q10[i]
+
+claves_r20_q18  = []
+conteos_r20_q18 = []
+for fila in datos:
+    valor = fila[IDX_Q18].strip()
+    encontrado = -1
+    for i in range(len(claves_r20_q18)):
+        if claves_r20_q18[i] == valor:
+            encontrado = i
+            break
+    if encontrado == -1:
+        claves_r20_q18.append(valor)
+        conteos_r20_q18.append(1)
     else:
-        conteo_q18[q18] = 1
+        conteos_r20_q18[encontrado] += 1
 
-# Sacar la moda de cada conteo
-for carrera, cantidad in conteo_carrera.items():
-    if cantidad > max_carrera:
-        max_carrera = cantidad
-        moda_carrera = carrera
-
-for semestre, cantidad in conteo_semestre.items():
-    if cantidad > max_semestre:
-        max_semestre = cantidad
-        moda_semestre = semestre
-
-for jornada, cantidad in conteo_jornada.items():
-    if cantidad > max_jornada:
-        max_jornada = cantidad
-        moda_jornada = jornada
-
-for trabaja, cantidad in conteo_trabaja.items():
-    if cantidad > max_trabaja:
-        max_trabaja = cantidad
-        moda_trabaja = trabaja
-
-for nivel, cantidad in conteo_q01.items():
-    if cantidad > max_q01:
-        max_q01 = cantidad
-        moda_q01 = nivel
-
-for nivel, cantidad in conteo_q10.items():
-    if cantidad > max_q10:
-        max_q10 = cantidad
-        moda_q10 = nivel
-
-for nivel, cantidad in conteo_q18.items():
-    if cantidad > max_q18:
-        max_q18 = cantidad
-        moda_q18 = nivel
+moda_q18 = claves_r20_q18[0]
+max_q18  = conteos_r20_q18[0]
+for i in range(len(claves_r20_q18)):
+    if conteos_r20_q18[i] > max_q18:
+        max_q18  = conteos_r20_q18[i]
+        moda_q18 = claves_r20_q18[i]
 
 print("=" * 45)
 print("  REPORTE 20: PERFIL PREDOMINANTE")
 print("=" * 45)
-print(f"  Carrera         : {moda_carrera}")
-print(f"  Semestre        : {moda_semestre}")
-print(f"  Jornada         : {moda_jornada}")
-print(f"  Trabaja         : {moda_trabaja}")
-print(f"  Horas estudio   : nivel {moda_q01}")
-print(f"  Calid. internet : nivel {moda_q10}")
-print(f"  Satisfaccion    : nivel {moda_q18}")
+print(f"  Carrera         : {moda_carrera} (n={max_carrera})")
+print(f"  Semestre        : {moda_semestre} (n={max_semestre})")
+print(f"  Jornada         : {moda_jornada} (n={max_jornada})")
+print(f"  Trabaja         : {moda_trabaja} (n={max_trabaja})")
+print(f"  Horas estudio   : nivel {moda_q01} (n={max_q01})")
+print(f"  Calid. internet : nivel {moda_q10} (n={max_q10})")
+print(f"  Satisfaccion    : nivel {moda_q18} (n={max_q18})")
 print("=" * 45)
