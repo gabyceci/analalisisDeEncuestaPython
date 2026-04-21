@@ -1,0 +1,178 @@
+import csv
+
+# ── Carga de datos ────────────────────────────────────────────
+datos = []
+encabezado = []
+
+with open("encuesta_ingenieria_10000_respuestas.csv", 'r', encoding='utf-8-sig') as archivo:
+    lector = csv.reader(archivo)
+    encabezado = next(lector)
+    for fila in lector:
+        datos.append(fila)
+
+# Índices
+IDX_PROMEDIO = encabezado.index('promedio_actual')
+IDX_Q01      = encabezado.index('q01_horas_estudio')
+IDX_Q07      = encabezado.index('q07_uso_plataformas')
+IDX_Q10      = encabezado.index('q10_calidad_internet')
+IDX_Q18      = encabezado.index('q18_satisfaccion_carrera')
+IDX_CARRERA  = encabezado.index('carrera')
+IDX_SEMESTRE = encabezado.index('semestre')
+IDX_JORNADA  = encabezado.index('jornada')
+IDX_TRABAJA  = encabezado.index('trabaja')
+
+total = len(datos)
+
+
+# ── REPORTE 17: Internet vs promedio académico ────────────────
+suma_por_internet    = {}
+cantidad_por_internet = {}
+
+for fila in datos:
+    nivel = fila[IDX_Q10].strip()
+    prom  = int(fila[IDX_PROMEDIO])
+    if nivel in suma_por_internet:
+        suma_por_internet[nivel]     += prom
+        cantidad_por_internet[nivel] += 1
+    else:
+        suma_por_internet[nivel]     = prom
+        cantidad_por_internet[nivel] = 1
+
+print("=" * 45)
+print("  REPORTE 17: INTERNET VS PROMEDIO ACADEMICO")
+print("=" * 45)
+for nivel in sorted(suma_por_internet.keys()):
+    prom = suma_por_internet[nivel] / cantidad_por_internet[nivel]
+    print(f"  Internet nivel {nivel} : promedio {prom:.2f}  (n={cantidad_por_internet[nivel]})")
+
+
+# ── REPORTE 18: Horas de estudio vs rendimiento ───────────────
+suma_por_horas     = {}
+cantidad_por_horas = {}
+
+for fila in datos:
+    nivel = fila[IDX_Q01].strip()
+    prom  = int(fila[IDX_PROMEDIO])
+    if nivel in suma_por_horas:
+        suma_por_horas[nivel]     += prom
+        cantidad_por_horas[nivel] += 1
+    else:
+        suma_por_horas[nivel]     = prom
+        cantidad_por_horas[nivel] = 1
+
+print("=" * 45)
+print("  REPORTE 18: HORAS ESTUDIO VS RENDIMIENTO")
+print("=" * 45)
+for nivel in sorted(suma_por_horas.keys()):
+    prom = suma_por_horas[nivel] / cantidad_por_horas[nivel]
+    print(f"  Horas nivel {nivel} : promedio {prom:.2f}  (n={cantidad_por_horas[nivel]})")
+
+
+# ── REPORTE 19: Interés en cursos virtuales ───────────────────
+alto_uso = 0
+for fila in datos:
+    if int(fila[IDX_Q07]) >= 4:
+        alto_uso += 1
+
+print("=" * 45)
+print("  REPORTE 19: INTERES EN CURSOS VIRTUALES")
+print("=" * 45)
+print(f"  Interesados     : {alto_uso} ({alto_uso/total*100:.1f}%)")
+print(f"  No interesados  : {total - alto_uso} ({(total-alto_uso)/total*100:.1f}%)")
+print(f"  Total           : {total}")
+
+
+# ── REPORTE 20: Perfil predominante ──────────────────────────
+moda_carrera  = ""
+moda_semestre = ""
+moda_jornada  = ""
+moda_trabaja  = ""
+moda_q01      = ""
+moda_q10      = ""
+moda_q18      = ""
+
+max_carrera  = 0
+max_semestre = 0
+max_jornada  = 0
+max_trabaja  = 0
+max_q01      = 0
+max_q10      = 0
+max_q18      = 0
+
+conteo_carrera  = {}
+conteo_semestre = {}
+conteo_jornada  = {}
+conteo_trabaja  = {}
+conteo_q01      = {}
+conteo_q10      = {}
+conteo_q18      = {}
+
+for fila in datos:
+    c = fila[IDX_CARRERA].strip()
+    conteo_carrera[c]  = conteo_carrera.get(c, 0) + 1
+
+    s = fila[IDX_SEMESTRE].strip()
+    conteo_semestre[s] = conteo_semestre.get(s, 0) + 1
+
+    j = fila[IDX_JORNADA].strip()
+    conteo_jornada[j]  = conteo_jornada.get(j, 0) + 1
+
+    t = fila[IDX_TRABAJA].strip()
+    conteo_trabaja[t]  = conteo_trabaja.get(t, 0) + 1
+
+    q1 = fila[IDX_Q01].strip()
+    conteo_q01[q1]     = conteo_q01.get(q1, 0) + 1
+
+    q10 = fila[IDX_Q10].strip()
+    conteo_q10[q10]    = conteo_q10.get(q10, 0) + 1
+
+    q18 = fila[IDX_Q18].strip()
+    conteo_q18[q18]    = conteo_q18.get(q18, 0) + 1
+
+# Sacar la moda de cada conteo
+for carrera, cantidad in conteo_carrera.items():
+    if cantidad > max_carrera:
+        max_carrera = cantidad
+        moda_carrera = carrera
+
+for semestre, cantidad in conteo_semestre.items():
+    if cantidad > max_semestre:
+        max_semestre = cantidad
+        moda_semestre = semestre
+
+for jornada, cantidad in conteo_jornada.items():
+    if cantidad > max_jornada:
+        max_jornada = cantidad
+        moda_jornada = jornada
+
+for trabaja, cantidad in conteo_trabaja.items():
+    if cantidad > max_trabaja:
+        max_trabaja = cantidad
+        moda_trabaja = trabaja
+
+for nivel, cantidad in conteo_q01.items():
+    if cantidad > max_q01:
+        max_q01 = cantidad
+        moda_q01 = nivel
+
+for nivel, cantidad in conteo_q10.items():
+    if cantidad > max_q10:
+        max_q10 = cantidad
+        moda_q10 = nivel
+
+for nivel, cantidad in conteo_q18.items():
+    if cantidad > max_q18:
+        max_q18 = cantidad
+        moda_q18 = nivel
+
+print("=" * 45)
+print("  REPORTE 20: PERFIL PREDOMINANTE")
+print("=" * 45)
+print(f"  Carrera         : {moda_carrera}")
+print(f"  Semestre        : {moda_semestre}")
+print(f"  Jornada         : {moda_jornada}")
+print(f"  Trabaja         : {moda_trabaja}")
+print(f"  Horas estudio   : nivel {moda_q01}")
+print(f"  Calid. internet : nivel {moda_q10}")
+print(f"  Satisfaccion    : nivel {moda_q18}")
+print("=" * 45)
