@@ -223,6 +223,86 @@ IDX_TRABAJA   = encabezado.index('trabaja')
 
 total = len(datos)
 
+# Reporte 1
+datos_personales = [fila[:6] for fila in datos]        # id, carrera, semestre, jornada, trabaja, promedio
+respuestas_q     = [fila[6:] for fila in datos]        # q01 hasta q20
+
+# Reporte
+print("=" * 45)
+print("  REPORTE 1")
+print("=" * 45)
+print(f"Total de encuestados : {len(datos)}")
+print("=" * 45)
+
+# Reporte 2
+conteo_carreras = {}
+
+for fila in datos:
+    carrera = fila[IDX_CARRERA].strip()
+    
+    if carrera in conteo_carreras:
+        conteo_carreras[carrera] += 1      # Si ya existe, suma 1
+    else:
+        conteo_carreras[carrera] = 1       # Si no existe, lo crea con 1
+
+# Mostrar resultados
+print("=" * 45)
+print("  REPORTE 2 ")
+print("  CANTIDAD DE ESTUDIANTES POR CARRERA")
+print("=" * 45)
+for carrera, cantidad in conteo_carreras.items():
+    porcentaje = (cantidad / len(datos)) * 100
+    print(f"  {carrera:<30} : {cantidad} ({porcentaje:.1f}%)")
+print("=" * 45)
+print(f"  Total                          : {len(datos)}")
+
+# Reporte 3
+# Contar estudiantes por el semestre
+conteo_semestres = {}
+
+for fila in datos:
+    semestre = fila[IDX_SEMESTRE].strip()
+
+    if semestre in conteo_semestres:
+        conteo_semestres[semestre] += 1
+    else:
+        conteo_semestres[semestre] = 1
+    
+# Resultados
+print("=" * 45)
+print("  REPORTE 3 ")
+print("CANTIDAD DE ESTUDIANTES POR SEMESTRE")
+print("=" * 45)
+for semestre, cantidad in conteo_semestres.items():
+    porcentaje = (cantidad / len(datos)) * 100
+    print(f"Semestre {semestre:<5} : {cantidad} ({porcentaje:.1f}%)")
+print("=" * 45)
+print(f"  Total                          : {len(datos)}")
+
+
+# Reporte 4
+# Contar estudiantes por jornada
+conteo_jornada = {}
+
+for fila in datos:
+    jornada = fila[IDX_JORNADA].strip()
+
+    if jornada in conteo_jornada:
+        conteo_jornada[jornada] += 1
+    else:
+        conteo_jornada[jornada] = 1
+
+# Resultados
+print("=" * 45)
+print("  REPORTE 4 ")
+print("CANTIDAD DE ESTUDIANTES POR JORNADA")
+print("=" * 45)
+for jornada, cantidad in conteo_jornada.items():
+    porcentaje = (cantidad / len(datos)) * 100
+    print(f"Jornada {jornada:<5} : {cantidad} ({porcentaje:.1f}%)")
+print("=" * 45)
+print(f"  Total                          : {len(datos)}")
+
 #REPORTE 9
 con_internet = 0
 for fila in datos:
